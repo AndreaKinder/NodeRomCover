@@ -1,0 +1,59 @@
+{
+  "name": "node-romcover",
+  "version": "1.0.0",
+  "description": "A Node.js library to create retro game console style covers from images.",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "src",
+    "assets"
+  ],
+  "scripts": {
+    "example:api": "node examples/api-server.js",
+    "example:basic": "node examples/basic-usage.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix"
+  },
+  "keywords": [
+    "cover",
+    "art",
+    "gameboy",
+    "nes",
+    "snes",
+    "n64",
+    "gamecube",
+    "ps1",
+    "generator",
+    "canvas",
+    "retro",
+    "game",
+    "library"
+  ],
+  "author": "AndreaKinder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndreaKinder/NodeRomCover.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AndreaKinder/NodeRomCover/issues"
+  },
+  "homepage": "https://github.com/AndreaKinder/NodeRomCover#readme",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "express": "^4.19.2",
+    "jest": "^29.0.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.0.0"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "canvas": "^2.11.2"
+  }
+}
