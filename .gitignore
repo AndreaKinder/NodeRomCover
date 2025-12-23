@@ -23,3 +23,7 @@ lerna-debug.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Example outputs
+cover-*.png
+caratula-*.png

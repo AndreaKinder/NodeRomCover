@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const { createCover, consoleConfigs } = require('./generator');
+const { createCover, consoleConfigs } = require('..');
 
 // --- Configuration ---
 const PORT = process.env.PORT || 3000;

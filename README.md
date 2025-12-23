@@ -1,86 +1,180 @@
-# RomCover API
+# RomCover
 
-Una biblioteca y API para crear carátulas de juegos retro.
+Una librería de Node.js para crear carátulas de juegos retro.
 
-Este paquete puede usarse como una API web o como un módulo de Node.js para generar carátulas de juegos que imitan el estilo de varias consolas clásicas. La herramienta toma una imagen, la recorta según el aspect ratio de la caja original y le añade una franja lateral con el logo de la consola.
+Esta librería genera carátulas de juegos que imitan el estilo de varias consolas clásicas. Toma una imagen, la recorta según el aspect ratio de la caja original y le añade una franja lateral con el logo de la consola.
 
 ## Consolas Soportadas
 
-- `gameboy`
-- `nes`
-- `snes`
-- `n64`
-- `gamecube`
-- `ps1`
+- `gameboy` - Game Boy
+- `nes` - Nintendo Entertainment System
+- `snes` - Super Nintendo Entertainment System
+- `n64` - Nintendo 64
+- `gamecube` - GameCube
+- `ps1` - PlayStation 1
 
 ## Instalación
 
-1. Clona este repositorio:
-   ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd RomCoverApi
-   ```
-
-2. Instala las dependencias del proyecto:
-   ```bash
-   npm install
-   ```
-
-## Uso como API Web
-
-El proyecto incluye un servidor de Express de ejemplo para usar la funcionalidad a través de HTTP.
-
-### Ejecución del Servidor
-
-Para iniciar el servidor, ejecuta el siguiente comando:
-
 ```bash
-npm run start:server
+npm install node-romcover
 ```
 
-El servidor se iniciará en `http://localhost:3000`.
+## Uso Básico
 
-### Cómo usar la API
+```javascript
+const { createCover } = require('node-romcover');
+const fs = require('fs');
 
-Para generar una carátula, debes enviar una petición `POST` al siguiente endpoint, especificando la consola en la URL:
+async function generateCover() {
+  try {
+    // Generar una carátula de Game Boy
+    const buffer = await createCover('gameboy', './mi-imagen.jpg');
 
-`http://localhost:3000/api/create/:console`
+    // Guardar la carátula generada
+    fs.writeFileSync('caratula-gameboy.png', buffer);
+    console.log('¡Carátula creada!');
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
 
-La petición debe ser de tipo `multipart/form-data` y contener un campo llamado `gameImage` con el archivo de tu imagen.
+generateCover();
+```
 
-#### Ejemplo de uso con `curl`
+## API
 
-Puedes usar `curl` para probar. Para este ejemplo, crearemos una carátula de **NES**:
+### `createCover(consoleType, imagePath)`
+
+Genera una carátula de juego en el estilo de la consola especificada.
+
+**Parámetros:**
+- `consoleType` (string): El tipo de consola. Valores válidos: `'gameboy'`, `'nes'`, `'snes'`, `'n64'`, `'gamecube'`, `'ps1'`
+- `imagePath` (string): La ruta al archivo de imagen que se usará como base
+
+**Retorna:**
+- `Promise<Buffer>`: Un buffer con la imagen PNG generada
+
+**Ejemplo:**
+```javascript
+const buffer = await createCover('n64', './cover-art.jpg');
+```
+
+### `supportedConsoles`
+
+Un array con todas las consolas soportadas.
+
+**Ejemplo:**
+```javascript
+const { supportedConsoles } = require('node-romcover');
+console.log(supportedConsoles); // ['gameboy', 'nes', 'snes', 'n64', 'gamecube', 'ps1']
+```
+
+### `consoleConfigs`
+
+Un objeto con la configuración de cada consola (logos, aspect ratios, etc.).
+
+**Ejemplo:**
+```javascript
+const { consoleConfigs } = require('node-romcover');
+console.log(consoleConfigs.gameboy);
+// { logo: 'gameboy-logo.png', cropAspectRatio: 1, logoWidth: 80, placement: 'side' }
+```
+
+## Ejemplos
+
+### Generar múltiples carátulas
+
+```javascript
+const { createCover, supportedConsoles } = require('node-romcover');
+const fs = require('fs');
+
+async function generateAllCovers(imagePath) {
+  for (const console of supportedConsoles) {
+    const buffer = await createCover(console, imagePath);
+    fs.writeFileSync(`cover-${console}.png`, buffer);
+    console.log(`Carátula de ${console} creada`);
+  }
+}
+
+generateAllCovers('./my-game-art.jpg');
+```
+
+### Usar con diferentes formatos de imagen
+
+La librería acepta cualquier formato de imagen soportado por el paquete `canvas` de Node.js (JPEG, PNG, etc.).
+
+```javascript
+const { createCover } = require('node-romcover');
+const fs = require('fs');
+
+// Funciona con JPG
+const jpgBuffer = await createCover('snes', './game.jpg');
+fs.writeFileSync('cover-snes.png', jpgBuffer);
+
+// También funciona con PNG
+const pngBuffer = await createCover('nes', './game.png');
+fs.writeFileSync('cover-nes.png', pngBuffer);
+```
+
+## Ejemplos de Uso Avanzado
+
+El repositorio incluye ejemplos adicionales en la carpeta `examples/`:
+
+### Ejemplo Básico
+
+```bash
+npm run example:basic -- ./tu-imagen.jpg gameboy
+```
+
+### Ejemplo de API Web (opcional)
+
+Si deseas usar la librería como una API web, hay un servidor de Express de ejemplo:
+
+```bash
+npm run example:api
+```
+
+Luego puedes hacer peticiones POST:
 
 ```bash
 curl -X POST \
   http://localhost:3000/api/create/nes \
   -F "gameImage=@mi-juego.jpg" \
-  --output caratula-nes-generada.png
+  --output caratula-nes.png
 ```
 
-- Reemplaza `nes` con cualquier otra consola soportada (`gameboy`, `snes`, etc.).
-- `--output caratula-nes-generada.png`: Guarda la imagen de respuesta en un archivo.
+## Desarrollo
 
-## Uso como Paquete de NPM
+### Instalación para desarrollo
 
-También puedes importar y usar la función principal directamente en tu proyecto de Node.js.
-
-### Ejemplo de uso en código
-
-```javascript
-const { createCover } = require('romcoverapi'); // Asumiendo que el paquete se llama así en npm
-const fs = require('fs');
-
-const imagePath = './ruta/a/mi-imagen.jpg';
-const consoleType = 'n64';
-
-createCover(consoleType, imagePath)
-  .then(buffer => {
-    fs.writeFileSync('caratula-n64.png', buffer);
-    console.log('¡Carátula de N64 creada!');
-  })
-  .catch(err => {
-    console.error('Error:', err.message);
-  });
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd RomCoverApi
+npm install
 ```
+
+### Ejecutar tests
+
+```bash
+npm test
+```
+
+### Linting
+
+```bash
+npm run lint
+npm run lint:fix
+```
+
+## Requisitos
+
+- Node.js >= 14
+- La librería `canvas` requiere dependencias nativas. Consulta la [documentación de node-canvas](https://github.com/Automattic/node-canvas#compiling) para más información sobre la instalación en tu sistema operativo.
+
+## Licencia
+
+MIT
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request.
